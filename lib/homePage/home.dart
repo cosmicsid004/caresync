@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:caresync/pages/aboutpage.dart';
+import 'package:caresync/pages/mood.dart';
 import 'package:caresync/pages/sensor.dart';
-import 'package:caresync/pages/docchat.dart';
+import 'package:caresync/pages/skinanalysis.dart';
 import 'package:flutter/material.dart';
-import 'package:glass/glass.dart';
 import 'package:lottie/lottie.dart';
 
 class Home extends StatefulWidget {
@@ -30,10 +30,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       key: _scaffoldKey, // Assign the key to Scaffold
       appBar: AppBar(
-        title: const Text(
-          "CareSync",
-          style: TextStyle(fontSize: 25),
-        ),
+        title: const Text("CareSync", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: 2)),
       ),
 
       drawer: Drawer(
@@ -48,17 +45,47 @@ class _HomeState extends State<Home> {
             ListTile(
               leading: Icon(Icons.auto_graph, color: Colors.green.shade700),
               title: const Text('SENSOR DATA'),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => sensor(),)),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TemperatureScreen()),
+                  ),
             ),
             ListTile(
-              leading: Icon(Icons.local_hospital_outlined, color: Colors.green.shade700),
-              title: const Text('DOC CHAT'),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => docchat(),)),
+              leading: Icon(
+                Icons.local_hospital_outlined,
+                color: Colors.green.shade700,
+              ),
+              title: const Text('SKIN ANALYSER'),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => skinanalysis()),
+                  ),
             ),
             ListTile(
-              leading: Icon(Icons.help_center_outlined, color: Colors.green.shade700),
+              leading: Icon(
+                Icons.notification_add_outlined,
+                color: Colors.green.shade700,
+              ),
+              title: const Text('REMINDERS'),
+              onTap:
+                  () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReminderNotePage()),
+              ),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.help_center_outlined,
+                color: Colors.green.shade700,
+              ),
               title: const Text('ABOUT'),
-              onTap: () =>Navigator.push(context, MaterialPageRoute(builder: (context) => aboutpage(),)),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => aboutpage()),
+                  ),
             ),
           ],
         ),
@@ -76,9 +103,22 @@ class _HomeState extends State<Home> {
           ),
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100), // Higher values for smoothness
+              filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+              // Higher values for smoothness
               child: Container(
-                color: Colors.white.withOpacity(0.05), // Less opacity for a cleaner look
+                color: Colors.white.withOpacity(
+                  0.05,
+                ), // Less opacity for a cleaner look
+              ),
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              child: Lottie.asset(
+                'assets/doctor.json',
+                fit: BoxFit.cover,
+                repeat: true,
+                animate: true,
               ),
             ),
           ),

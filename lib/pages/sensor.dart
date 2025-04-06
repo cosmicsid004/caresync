@@ -1,29 +1,31 @@
 import 'dart:convert';
-import 'dart:async'; // Import timer
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:lottie/lottie.dart'; // Import Lottie
+import 'package:lottie/lottie.dart';
+import 'dart:ui';
 
-class sensor extends StatefulWidget {
-  const sensor({super.key});
+class TemperatureScreen extends StatefulWidget {
+  const TemperatureScreen({super.key});
 
   @override
-  State<sensor> createState() => _sensorState();
+  State<TemperatureScreen> createState() => _TemperatureScreenState();
 }
 
-class _sensorState extends State<sensor> {
-
-  double pulse = 0.0;
+class _TemperatureScreenState extends State<TemperatureScreen> {
+  double temperature = 0.0;
+  int bpm = 0;
   Timer? timer;
 
   Future<void> fetchSensorData() async {
-    final url = Uri.parse('http://192.168.1.108/sensor'); // Replace with actual IP
+    final url = Uri.parse('http://10.10.185.65/sensor'); // Replace with your NodeMCU IP
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          pulse = data['pulse'];
+          temperature = data['temperature']?.toDouble() ?? 0.0;
+          bpm = data['bpm'] ?? 0;
         });
       } else {
         print('Error: ${response.statusCode}');
@@ -36,13 +38,13 @@ class _sensorState extends State<sensor> {
   @override
   void initState() {
     super.initState();
-    fetchSensorData(); // Fetch data immediately
-    timer = Timer.periodic(Duration(seconds: 1), (Timer t) => fetchSensorData()); // Auto-refresh every second
+    fetchSensorData();
+    timer = Timer.periodic(Duration(seconds: 1), (_) => fetchSensorData());
   }
 
   @override
   void dispose() {
-    timer?.cancel(); // Stop timer when widget is disposed
+    timer?.cancel();
     super.dispose();
   }
 
@@ -50,96 +52,78 @@ class _sensorState extends State<sensor> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.green, // Basic green theme
+        brightness: Brightness.dark,
+      ),
       home: Scaffold(
-        appBar: AppBar(title: Text('Heart Rate Monitor')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                SizedBox(width: 20, height: 40,),
-
-                Card(
-                  elevation: 20,
-                  color: Colors.grey,
-                  child: Padding(
-                      padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Lottie Animation
-                        Lottie.asset(
-                          'assets/heart.json', // Ensure the JSON file exists in assets
-                          height: 200,
-                          repeat: true,
-                          animate: true,
-                        ),
-                        SizedBox(height: 20),
-                        // Sensor Data Display
-                        Text(
-                          'Pulse: ${pulse.toStringAsFixed(2)} BPM',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Card(
-                  elevation: 20,
-                  color: Colors.grey,
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Lottie Animation
-                        Lottie.asset(
-                          'assets/heart.json', // Ensure the JSON file exists in assets
-                          height: 200,
-                          repeat: true,
-                          animate: true,
-                        ),
-                        SizedBox(height: 20),
-                        // Sensor Data Display
-                        Text(
-                          'Pulse: ${pulse.toStringAsFixed(2)}%',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Card(
-                  elevation: 20,
-                  color: Colors.grey,
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Lottie Animation
-                        Lottie.asset(
-                          'assets/heart.json', // Ensure the JSON file exists in assets
-                          height: 200,
-                          repeat: true,
-                          animate: true,
-                        ),
-                        SizedBox(height: 20),
-                        // Sensor Data Display
-                        Text(
-                          'Pulse: ${pulse.toStringAsFixed(2)}%',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        appBar: AppBar(
+          title: Text(
+            'Sensor Stats',
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: 1),
           ),
-        )
+        ),
+        body: Stack(
+          children: [
+            SizedBox.expand(
+              child: Lottie.asset(
+                'assets/background.json',
+                fit: BoxFit.cover,
+                repeat: true,
+                animate: true,
+              ),
+            ),
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                // Higher values for smoothness
+                child: Container(
+                  color: Colors.white.withOpacity(
+                    0.05,
+                  ), // Less opacity for a cleaner look
+                ),
+              ),
+            ),
+            Center(
+              child: Card(
+                elevation: 20,
+                color: Colors.grey.shade200,
+                margin: EdgeInsets.all(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Lottie.asset(
+                        'assets/temp.json', // Make sure this file exists
+                        height: 150,
+                        repeat: true,
+                        animate: true,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Temperature: ${temperature.toStringAsFixed(2)} °C',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      SizedBox(height: 30),
+                      Lottie.asset(
+                        'assets/heart.json', // Add this asset too
+                        height: 120,
+                        repeat: true,
+                        animate: true,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Heart Rate: $bpm BPM',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

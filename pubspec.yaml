@@ -37,6 +37,10 @@ dependencies:
   http:
   lottie:
   glass:
+  image_picker:
+  tflite_v2:
+  intl: ^0.18.1
+  timezone:
 
 dev_dependencies:
   flutter_test:
