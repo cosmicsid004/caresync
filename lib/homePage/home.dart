@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:caresync/pages/aboutpage.dart';
+import 'package:caresync/pages/appointments.dart';
 import 'package:caresync/pages/mood.dart';
 import 'package:caresync/pages/sensor.dart';
 import 'package:caresync/pages/skinanalysis.dart';
@@ -73,6 +74,18 @@ class _HomeState extends State<Home> {
                   () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ReminderNotePage()),
+              ),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.science_outlined,
+                color: Colors.green.shade700,
+              ),
+              title: const Text('APPOINTMENTS'),
+              onTap:
+                  () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => appointments()),
               ),
             ),
             ListTile(

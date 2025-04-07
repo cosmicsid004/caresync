@@ -71,7 +71,7 @@ class _ReminderNotePageState extends State<ReminderNotePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Reminder Notes')),
+      appBar: AppBar(title: Text('Reminder Notes', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: 2),)),
       body: Stack(
         children: [
           SizedBox.expand(
